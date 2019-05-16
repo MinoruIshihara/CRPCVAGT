@@ -9,7 +9,7 @@ import math
 
 coor = [[33.5176621,132.9573208],[33.58768,132.94716],[33.5176621,132.9573208],[33.58768,132.94716]] #[緯度1,経度1],[緯度2,経度2]...の形式で入力してください
 
-data={"NE":0, "PMTPB":0, "SGMTAUO":0, "TA2AT":0, "ENGTRQ":0, "ENGTHW":0, "VREQTRQ":0, "ATOTMP":0, "ABSSP1":0, "METSP1":0, "AP":0}
+data={"NE":0, "PMTPB":0, "SGMTAUO":0, "TA2AT":0, "ENGTRQ":0, "ENGTHW":0, "VREQTRQ":0, "AP":0, "ATOTMP":0, "ABSSP1":0, "METSP1":0}
 
 rtime = 0
 runtime = 0
@@ -125,32 +125,20 @@ class CallBackFunction(can.Listener):
    data['NE'] = (msg.data[0] * 0x100 + msg.data[1]) * 12800 / 64 / 256
    data['PMTPB'] = (msg.data[3] * 0x100 + msg.data[4]) * 500 / 256 / 256
    data['SGMTAUO'] = (msg.data[5] * 0x100 + msg.data[6]) / 32
-   data['XVTHDEF'] = (msg.data[2] & 0x40) / 0x40
-   data['XFATHR'] = (msd.data[2] & 0x20) / 0x20
-   data['XPMDEF'] = (msd.data[2] & 0x10) / 0x10
-   data['XFAPM'] = (msd.data[2] & 0x08) / 0x08
   if msg.arbitration_id == 0x042:
    data['TA2AT'] = (msg.data[0] * 0x100 + msg.data[1]) * 125 / 64 / 256
    data['ENGTRQ'] = (msg.data[2] * 0x100 + msg.data[3]) / 64
-   data['XTHWHIAT'] = (msg.data[4] & 0x02) / 0x02
-   data['XVTHDEFAT'] = (msg.data[5] & 0x20) / 0x20
-   data['XTHWNG'] = (msg.data[6] & 0x80) / 0x80
-  if msg.arbitration_id == 0x3D1:
-   data['THO'] = (msg.data[0] * 0x04 + (msg.data[1] & 0x0C) / 0x40) * 0.1 - 30
   if msg.arbitration_id == 0x044:
    data['ENGTHW'] = (msg.data[1] * 0x100 + msg.data[2]) * 0.01
    data['UREQTRQ'] = (msg.data[3] * 0x100 + msg.data[4]) / 64
+  #if msg.arbitration_id == 0x04C:
+   #data['AP'] = (int((msg.data[3] & 0x80) / 0x80) + data[2] * 2 + (data[3] & 0x0f) * 0x200 ) / 64
   if msg.arbitration_id == 0x05A:
    data['ATOTMP'] = (msg.data[3] * 0x100 + msg.data[4]) * 0.01
   if msg.arbitration_id == 0x021:
    data['ABSSP1'] = (msg.data[1] * 0x100 + msg.data[2]) * 0.01
-   data['VSCTRQR'] = (msg.data[0] * 0x80) / 0x80
-   data['TRQLMTBK'] = (msg.data[1] * 0x100 + msg.data[2]) / 64
-   data['XEGSTOPFREQ'] = (msg.data[5] & 0x02) / 0x02
   if msg.arbitration_id == 0x080:
    data['METSP1'] = (msg.data[0] * 0x100 + msg.data[1]) * 0.01
-  if msg.arbitration_id == 0x04C:
-   #data['AP'] = ((msg.data[3] & 0x80) / 0x80 + msg.data[2] * 2 + (msg.data[3] & 0x0f) * 0x200) / 64
   #print(data)
 
 var_water=tk.StringVar()
