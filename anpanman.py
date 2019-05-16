@@ -9,7 +9,7 @@ import math
 
 coor = [[33.5176621,132.9573208],[33.58768,132.94716],[33.5176621,132.9573208],[33.58768,132.94716]] #[緯度1,経度1],[緯度2,経度2]...の形式で入力してください
 
-data={"NE":0, "PMTPB":0, "SGMTAUO":0, "TA2AT":0, "ENGTRQ":0, "ENGTHW":0, "VREQTRQ":0, "AP":0, "ATOTMP":0, "ABSSP1":0, "METSP1":0}
+data={"NE":0, "PMTPB":0, "SGMTAUO":0, "TA2AT":0, "ENGTRQ":0, "ENGTHW":0, "VREQTRQ":0, "ATOTMP":0, "ABSSP1":0, "METSP1":0}
 
 rtime = 0
 runtime = 0
@@ -131,8 +131,6 @@ class CallBackFunction(can.Listener):
   if msg.arbitration_id == 0x044:
    data['ENGTHW'] = (msg.data[1] * 0x100 + msg.data[2]) * 0.01
    data['UREQTRQ'] = (msg.data[3] * 0x100 + msg.data[4]) / 64
-  if msg.arbitration_id == 0x04C:
-   data['AP'] = (int((msg.data[3] & 0x80) / 0x80) + data[2] * 2 + (data[3] & 0x0f) * 0x200 ) / 64
   if msg.arbitration_id == 0x05A:
    data['ATOTMP'] = (msg.data[3] * 0x100 + msg.data[4]) * 0.01
   if msg.arbitration_id == 0x021:
