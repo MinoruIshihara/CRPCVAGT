@@ -138,7 +138,7 @@ class CallBackFunction(can.Listener):
   if msg.arbitration_id == 0x080:
    data['METSP1'] = (msg.data[0] * 0x100 + msg.data[1]) * 0.01
   if msg.arbitration_id == 0x04C:
-   data['AP'] = (int((msg.data[3] & 0x80) / 0x80) + data[2] * 2 + (data[3] & 0x0f) * 0x200) / 64
+   data['AP'] = (int((msg.data[3] & 0x80) / 0x80) + msg.data[2] * 2 + (msg.data[3] & 0x0f) * 0x200) / 64
   #print(data)
 
 var_water=tk.StringVar()
