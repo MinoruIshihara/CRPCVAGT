@@ -18,6 +18,7 @@ goaltime = 0
 speed = 0
 pointn = 3
 point = 0
+flag = 0
 
 test_value=100
 
@@ -149,7 +150,7 @@ class CallBackFunction(can.Listener):
    data['XEGSTOPFREQ'] = (msg.data[5] & 0x02) / 0x02
   if msg.arbitration_id == 0x080:
    data['METSP1'] = (msg.data[0] * 0x100 + msg.data[1]) * 0.01
-  if msg.arbitration_id == 0x04C:
+  #if msg.arbitration_id == 0x04C:
    #data['AP'] = ((msg.data[3] & 0x80) / 0x80 + msg.data[2] * 2 + (msg.data[3] & 0x0f) * 0x200) / 64
   #print(data)
 
@@ -203,6 +204,12 @@ def window():
     Button3=tk.Button(text='戻る',font=("",20))
     Button3.bind("<Button-1>",back)
     Button3.place(x=100, y=151)
+    #Button4=tk.Button(text='前のラップ',font=("",22))
+    #Button3.bind("<Button-1>",back_lap)
+    #Button3.place(x=420, y=200)
+    #Button4=tk.Button(text='次のラップ',font=("",22))
+    #Button3.bind("<Button-1>",next_lap)
+    #Button3.place(x=550, y=200)
     #Button4=tk.Button(text='緯度')
     #utton4.bind("<Button-1>",relat)
     #Button4.place(x=150, y=300)
@@ -280,6 +287,7 @@ def stopwatch(goallatitude,goallongitude):
                         f=True
                         runtime = goaltime - starttime
                         laptime = runtime
+                        #flag += 1
                         laplog()
                         point=point+1
 
@@ -305,6 +313,18 @@ def laptimes():
     lp = "{:.2f}".format(float(laptime))
     return lp
 
+#def back_lap():
+#    global laptime
+#    flag -= 1
+#    lp = "{:.2f}".format(float(laptime[flag]))
+#    var_laptime.set(lp)
+   
+#def back_lap():
+#    global laptime
+    #flag += 1
+#    lp = "{:.2f}".format(float(laptime))
+ #   var_laptime.set(lp)
+    
 def reflesh():
     global lat, lon
     sw = '{:05.2f}'.format(stopwatch(lat,lon))
