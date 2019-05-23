@@ -1,4 +1,4 @@
-﻿import tkinter as tk
+import tkinter as tk
 import time
 import serial
 import micropyGPS
@@ -7,7 +7,7 @@ import sys
 import can
 import math
 
-coor = [[33.5176621,132.9573208],[33.58768,132.94716],[33.5176621,132.9573208],[33.58768,132.94716]] #[緯度1,経度1],[緯度2,経度2]...の形式で入力してください
+coor = [[0,0],[0,0],[0,0],[0,0]] #[緯度1,経度1],[緯度2,経度2]...の形式で入力してください
 
 data={"NE":0, "PMTPB":0, "SGMTAUO":0, "TA2AT":0, "ENGTRQ":0, "ENGTHW":0, "VREQTRQ":0, "ATOTMP":0, "ABSSP1":0, "METSP1":0, "AP":0}
 
@@ -19,19 +19,19 @@ speed = 0
 pointn = 3
 point = 0
 flag = 0
-
-test_value=100
-
+ss = 0
 f=True
 sbutton=False
-#slat = 34.67922
-#slon = 135.06710
-#glon = [135.0669208]
 t=True
 x=0
 lat=0.0
 lon=0.0
 laptime = 0.0
+laptime1 = 0.0
+laptime2 = 0.0
+laptime3 = 0.0
+laptime4 = 0.0
+p = 0
 
 gps=micropyGPS.MicropyGPS(9,'dd')
 
@@ -204,12 +204,12 @@ def window():
     Button3=tk.Button(text='戻る',font=("",20))
     Button3.bind("<Button-1>",back)
     Button3.place(x=100, y=151)
-    #Button4=tk.Button(text='前のラップ',font=("",22))
-    #Button3.bind("<Button-1>",back_lap)
-    #Button3.place(x=420, y=200)
-    #Button4=tk.Button(text='次のラップ',font=("",22))
-    #Button3.bind("<Button-1>",next_lap)
-    #Button3.place(x=550, y=200)
+    Button4=tk.Button(text='前のラップ',font=("",20))
+    Button4.bind("<Button-1>",back_lap)
+    Button4.place(x=420, y=0)
+    Button5=tk.Button(text='次のラップ',font=("",20))
+    Button5.bind("<Button-1>",next_lap)
+    Button5.place(x=550, y=0)
     #Button4=tk.Button(text='緯度')
     #utton4.bind("<Button-1>",relat)
     #Button4.place(x=150, y=300)
@@ -270,6 +270,8 @@ def relon(event):
 
 def stopwatch(goallatitude,goallongitude):
     global f,runtime, starttime,goaltime,sbutton,point,laptime
+    goallatitude += 0.00002
+    goallongitude += 0.00002
     if sbutton:
         if data['METSP1'] > 15:
             starttime=time.time()
@@ -278,16 +280,26 @@ def stopwatch(goallatitude,goallongitude):
             sbutton=False
     if not f:
         runtime=time.time() - starttime
-        if (goallatitude-0.0001<= gps.latitude[0]):
-            if (gps.latitude[0] <= goallatitude+0.0001):
-                if (goallongitude-0.0001 <= gps.longitude[0]):
-                    if (gps.longitude[0] <= goallongitude+0.0001):
+        if (goallatitude-0.00005<= gps.latitude[0]):
+            if (gps.latitude[0] <= goallatitude+0.00005):
+                if (goallongitude-0.00005 <= gps.longitude[0]):
+                    if (gps.longitude[0] <= goallongitude+0.00005):
                         goaltime=time.time()
                         print(goaltime)
                         f=True
                         runtime = goaltime - starttime
                         laptime = runtime
-                        #flag += 1
+                        p = 0
+                        if ss == 0:
+                            laptime1 = laptime
+                        elif ss == 1:
+                            laptime2 = laptime
+                        elif ss == 2:
+                            laptime3 = laptime
+                        elif ss == 3:
+                            laptime4 = laptime
+                        ss += 1
+                        flag = ss
                         laplog()
                         point=point+1
 
@@ -313,17 +325,55 @@ def laptimes():
     lp = "{:.2f}".format(float(laptime))
     return lp
 
-#def back_lap():
-#    global laptime
-#    flag -= 1
-#    lp = "{:.2f}".format(float(laptime[flag]))
-#    var_laptime.set(lp)
-   
-#def back_lap():
-#    global laptime
-    #flag += 1
-#    lp = "{:.2f}".format(float(laptime))
- #   var_laptime.set(lp)
+def back_lap():
+    global laptime, p
+    p = 1
+    if flag == 0 or flag == 1:
+        lp = "{:.2f}".format(float(laptime))
+        return lp
+    elif flag == 2:
+        flag = 1
+        lp = "{:.2f}".format(float(laptime1))
+        return lp
+    elif flag == 3:
+        flag = 2
+        lp = "{:.2f}".format(float(laptime2))
+        return lp
+    elif flag == 4:
+        flag = 3
+        lp = "{:.2f}".format(float(laptime3))
+        return lp
+
+def next_lap():
+    global laptime, p
+    p = 2
+    if flag == 4:
+        lp = "{:.2f}".format(float(laptime4))
+        return lp
+    elif flag == 3:
+        if ss > flag:
+            flag = 4
+            lp = "{:.2f}".format(float(laptime4))
+            return lp
+        else :
+            lp = "{:.2f}".format(float(laptime))
+            return lp
+    elif flag == 2:
+        if ss > flag:
+            flag = 3
+            lp = "{:.2f}".format(float(laptime3))
+            return lp
+        else :
+            lp = "{:.2f}".format(float(laptime))
+            return lp
+    elif flag == 1:
+        if ss > flag:
+            flag = 2
+            lp = "{:.2f}".format(float(laptime2))
+            return lp
+        else :
+            lp = "{:.2f}".format(float(laptime))
+            return lp
     
 def reflesh():
     global lat, lon
@@ -335,8 +385,15 @@ def reflesh():
     var_realtime.set(x)
     y=titen()
     var_titen.set(y)
-    z=laptimes()
-    var_laptime.set(z)
+    if p == 0:
+        z=laptimes()
+        var_laptime.set(z)
+    elif p == 1:
+        z=back_lap()
+        var_laptime.set(z)
+    elif p == 2:
+        z=next_lap()
+        var_laptime.set(z)    
     root.after(10,reflesh)
 
 #window()
