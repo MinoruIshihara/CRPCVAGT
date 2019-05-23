@@ -7,10 +7,11 @@ import threading
 import sys
 import can
 import math
+import smbus2
 
 coor = [[33.5176621,132.9573208],[33.58768,132.94716],[33.5176621,132.9573208],[33.58768,132.94716]] #[緯度1,経度1],[緯度2,経度2]...の形式で入力してください
 
-data={"NE":0, "PMTPB":0, "SGMTAUO":0, "TA2AT":0, "ENGTRQ":0, "ENGTHW":0, "VREQTRQ":0, "ATOTMP":0, "ABSSP1":0, "METSP1":0, "AP":0}
+data={"NE":0, "PMTPB":0, "SGMTAUO":0, "TA2AT":0, "ENGTRQ":0, "ENGTHW":0, "VREQTRQ":0, "ATOTMP":0, "ABSSP1":0, "METSP1":0, "AP":0,"OILTEMP":0}
 
 rtime = 0
 runtime = 0
@@ -150,20 +151,42 @@ class CallBackFunction(can.Listener):
    data['XEGSTOPFREQ'] = (msg.data[5] & 0x02) / 0x02
   if msg.arbitration_id == 0x080:
    data['METSP1'] = (msg.data[0] * 0x100 + msg.data[1]) * 0.01
-  if msg.arbitration_id == 0x04C:
+ # if msg.arbitration_id == 0x04C:
    #data['AP'] = ((msg.data[3] & 0x80) / 0x80 + msg.data[2] * 2 + (msg.data[3] & 0x0f) * 0x200) / 64
   #print(data)
 
 var_water=tk.StringVar()
 var_engine=tk.StringVar()
 
+def Oil_temp():
+    Temp = 0.0
+    bus_oil=smbus2.SMBus(1)
+    bus_oil.write_i2c_block_data(0x68,0b10001000,[0x00])
+    time.sleep(0.5)
+
+    data_oil=bus_oil.read_i2c_block_data(0x68,0x00,2)
+    raw=data_oil[0]<<8 | data_oil[1]
+
+    if raw >32767:
+        raw-=65535
+ 
+    vol=2.048/32767
+    v=raw*vol
+
+    Rf=(v/(4.13-v))*10000.0
+    lnRf=Rf/10000
+    Temp=3380/(math.log(lnRf)+3380/298.16)-273.16
+    return ('{:<.1f}'.format(Temp))
+
+
 def water_temp():
     var_water.set('{:<.1f}'.format(data['ENGTHW']))
     root.after(500,water_temp)
 
 def engine():
-    var_engine.set('{0:.0f}'.format(data['NE']))
-    root.after(500,engine)
+    x = Oil_temp()
+    var_engine.set(x)
+    root.after(1000,engine)
 
 call_back_function=CallBackFunction()
 can.Notifier(bus,[call_back_function, ])
@@ -224,7 +247,7 @@ def window():
     label_engine = tk.Label(root, textvariable=var_engine,font=("",80) , fg="red")
     label_engine.place(x=230, y=240)
     TxtWater = tk.Label(root,text='WaterTmp')
-    TxtEngine = tk.Label(root,text='EngineRPM')
+    TxtEngine = tk.Label(root,text='OilTmp')
     TxtWater.place(x=600,y=260)
     TxtEngine.place(x=300,y=260)
     #rtime=stopwatch(lat,lon)
@@ -237,7 +260,7 @@ def eienloop():
     root.after(100,eienloop)
 
 root.after(500,water_temp)
-root.after(500,engine)
+root.after(1000,engine)
 
 def start(event):
     print('OK')
