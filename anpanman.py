@@ -117,6 +117,11 @@ def nextpoint(event):
 root = tk.Tk()
 root.title("V2")
 root.geometry("800x420")
+nb = ttk.Notebook(width=800,height=420)
+tab = tk.Frame(root)
+nb.add(tab,text="CanView")
+
+
 #static2=tk.Label(text="{0:.2f}".format(rtime))
 
 bus=can.interface.Bus('can0',bustype='socketcan',bitrate=500000,canfilters=None)
