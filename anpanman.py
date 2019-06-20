@@ -161,10 +161,9 @@ var_engine=tk.StringVar()
 def Oil_temp():
     Temp = 0.0
     bus_oil=smbus2.SMBus(1)
-    bus_oil.write_i2c_block_data(0x68,0b10001000,[0x00])
-    time.sleep(0.5)
-
     data_oil=bus_oil.read_i2c_block_data(0x68,0x00,2)
+    bus_oil.write_i2c_block_data(0x68,0b10001000,[0x00])
+    
     raw=data_oil[0]<<8 | data_oil[1]
 
     if raw >32767:
@@ -243,7 +242,7 @@ def window():
 
 
     label_water = tk.Label(root, textvariable=var_water, font=("",80) , fg="blue")
-    label_water.place(x=500, y=240)
+    label_water.place(x=520, y=240)
     label_engine = tk.Label(root, textvariable=var_engine,font=("",80) , fg="red")
     label_engine.place(x=230, y=240)
     TxtWater = tk.Label(root,text='WaterTmp')
@@ -259,8 +258,8 @@ def eienloop():
     lon=coor[point][1]
     root.after(100,eienloop)
 
-root.after(500,water_temp)
-root.after(1000,engine)
+#root.after(500,water_temp)
+#root.after(1000,engine)
 
 def start(event):
     print('OK')
@@ -344,6 +343,10 @@ def reflesh():
     root.after(10,reflesh)
 
 #window()
+
+bus_oil=smbus2.SMBus(1)
+bus_oil.write_i2c_block_data(0x68,0b10001000,[0x00])
+
 root.after(10,window)
 
 root.after(100,eienloop)
