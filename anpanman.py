@@ -122,7 +122,73 @@ def datalog():
     file = open('./datalog.txt', 'a')
     file.write(str(gps.latitude[0]) + ' ' + str(gps.longitude[0])+ ' ' + time.strftime("%y/%m/%d %H:%M:%S")+"\n")
     file.close()
-    root.after(1000, datalog)
+    root.after(1000,datalog)
+
+def laplog():
+    global laptime
+    file = open('./laplog.txt','a')
+    file.write('地点 %d : %f \n' % (point+1, laptime))
+    file.close()
+
+def nextstep(event):
+    global t
+    t==False
+
+def nextpoint(event):
+    global pointn
+    pointn=pointn+1
+    if(point>pointn):
+        t==False
+
+
+#setting = tk.Tk()
+#setting.title("setting")
+#setting.geometry("400x400")
+#static1 = tk.Label(text="区間数")
+#static1.place(x=0, y=0)
+#Entry1=tk.Entry(setting,width=100)
+#Entry1.insert(tk.END,"0")
+#Entry1.place(x=50,y=0)
+#Button1=tk.Button(text='次へ')
+#Button1.bind("<Button-1>",nextstep, sys.exit)
+#Button1.place(x=100, y=200)
+
+
+#while(t==True):
+#    pointn = int(Entry1.get()) - 1
+
+
+#t=True
+#setting = tk.Tk()
+#setting.title("setting")
+#setting.geometry("400x400")
+
+#while(t==True):
+#    static1 = tk.Label(text="緯度")
+#    static1.place(x=0, y=0)
+#    static2 = tk.Label(text="経度")
+#    static2.place(x=200, y=0)
+#    Entry1=tk.Entry(setting,wieght=100)
+#    Entry1.insert(tk.END,"0")
+#    Entry1.place(x=50,y=0)
+#    Entry2=tk.Entry(setting,wieght=100)
+#    Entry2.place(x=200,y=200)
+#    coor[point][0] = float(Entry1.get())
+#    coor[point][1] = float(Entry2.get())
+#    Button1=tk.Button(text='次へ')
+#    Button1.bind("<Button-1>",nextpoint, command=sys.exit)
+#    Button1.place(x=100, y=300)
+
+root = tk.Tk()
+root.title("V2")
+root.geometry("800x420")
+nb = ttk.Notebook(master = root)
+tab1 = tk.Frame(nb)
+tab2 = tk.Frame(nb)
+nb.add(tab1,text = 'GPS')
+nb.add(tab2,text = "CanView")
+nb.pack()
+
 
 
 #can通信の設定
@@ -134,24 +200,33 @@ class CallBackFunction(can.Listener):
             data['NE'] = (msg.data[0] * 0x100 + msg.data[1]) * 12800 / 64 / 256
             data['PMTPB'] = (msg.data[3] * 0x100 + msg.data[4]) * 500 / 256 / 256
             data['SGMTAUO'] = (msg.data[5] * 0x100 + msg.data[6]) / 32
+            data['XVTHDEF'] = (msg.data[2] & 0x40) / 0x40
+            data['XFATHR'] = (msd.data[2] & 0x20) / 0x20
+            data['XPMDEF'] = (msd.data[2] & 0x10) / 0x10
+            data['XFAPM'] = (msd.data[2] & 0x08) / 0x08
         if msg.arbitration_id == 0x042:
             data['TA2AT'] = (msg.data[0] * 0x100 + msg.data[1]) * 125 / 64 / 256
             data['ENGTRQ'] = (msg.data[2] * 0x100 + msg.data[3]) / 64
+            data['XTHWHIAT'] = (msg.data[4] & 0x02) / 0x02
+            data['XVTHDEFAT'] = (msg.data[5] & 0x20) / 0x20
+            data['XTHWNG'] = (msg.data[6] & 0x80) / 0x80
+        if msg.arbitration_id == 0x3D1:
+            data['THO'] = (msg.data[0] * 0x04 + (msg.data[1] & 0x0C) / 0x40) * 0.1 - 30
         if msg.arbitration_id == 0x044:
             data['ENGTHW'] = (msg.data[1] * 0x100 + msg.data[2]) * 0.01
             data['UREQTRQ'] = (msg.data[3] * 0x100 + msg.data[4]) / 64
-        #if msg.arbitration_id == 0x04C:
-            #data['AP'] = (int((msg.data[3] & 0x80) / 0x80) + data[2] * 2 + (data[3] & 0x0f) * 0x200 ) / 64
         if msg.arbitration_id == 0x05A:
             data['ATOTMP'] = (msg.data[3] * 0x100 + msg.data[4]) * 0.01
         if msg.arbitration_id == 0x021:
             data['ABSSP1'] = (msg.data[1] * 0x100 + msg.data[2]) * 0.01
+            data['VSCTRQR'] = (msg.data[0] * 0x80) / 0x80
+            data['TRQLMTBK'] = (msg.data[1] * 0x100 + msg.data[2]) / 64
+            data['XEGSTOPFREQ'] = (msg.data[5] & 0x02) / 0x02
         if msg.arbitration_id == 0x080:
             data['METSP1'] = (msg.data[0] * 0x100 + msg.data[1]) * 0.01
 
-        #print(data)
-
-
+var_water=tk.StringVar()
+var_engine=tk.StringVar()
 #油温の取得
 def Oil_temp():
     Temp = 0.0
