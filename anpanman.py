@@ -1,4 +1,4 @@
-import tkinter as tk
+﻿import tkinter as tk
 import tkinter.ttk as ttk
 import time
 import serial
@@ -39,10 +39,20 @@ p = 0
 root = tk.Tk()
 root.title("V2")
 root.geometry("800x420")
-nb = ttk.Notebook(width=800,height=420)
-tab = tk.Frame(root)
-nb.add(tab,text="CanView")
+#nb = ttk.Notebook(width=800,height=420)
+#tab = tk.Frame(root)
+#nb.add(tab,text="CanView")
 
+
+#root = tk.Tk()
+#root.title("V2")
+#root.geometry("800x420")
+nb = ttk.Notebook(master = root)
+tab1 = tk.Frame(nb)
+tab2 = tk.Frame(nb)
+nb.add(tab1,text = 'GPS',padding = 3)
+nb.add(tab2,text = "CanView",padding = 3)
+nb.pack()
 
 var_water = tk.StringVar()
 var_oil = tk.StringVar()
@@ -57,13 +67,13 @@ var_laptime = tk.StringVar()
 #windowの設定
 def window():
     global rtime
-    static1=tk.Label(root, textvariable=var_realtime, font=("",20))
+    static1=tk.Label(tab1, textvariable=var_realtime, font=("",20))
     static1.place(x=0, y=300)
-    static2=tk.Label(root, textvariable=var_stopwatch, text="{0:.2f}".format(rtime), font=("",100),justify="center")
+    static2=tk.Label(tab1, textvariable=var_stopwatch, text="{0:.2f}".format(rtime), font=("",100),justify="center")
     static2.place(x=0,y=-10)
-    static7=tk.Label(root, textvariable=var_laptime, font=("",80))
+    static7=tk.Label(tab1, textvariable=var_laptime, font=("",80))
     static7.place(x=450, y=100)
-    static8=tk.Label(root, textvariable=var_titen, font=("",30))
+    static8=tk.Label(tab1, textvariable=var_titen, font=("",30))
     static8.place(x=200, y=150)
 
     Button1=tk.Button(text='スタート',font=("",20))
@@ -88,13 +98,13 @@ def window():
     call_back_function=CallBackFunction()
     can.Notifier(bus,[call_back_function, ])
 
-    TxtEngine = tk.Label(root,text='OilTmp', fg="red")
-    TxtWater = tk.Label(root,text='WaterTmp', fg="blue")
+    TxtEngine = tk.Label(tab1,text='OilTmp', fg="red")
+    TxtWater = tk.Label(tab1,text='WaterTmp', fg="blue")
     TxtEngine.place(x=300,y=240)
     TxtWater.place(x=570,y=240)
-    label_engine = tk.Label(root, textvariable=var_oil, font=("",80), fg="red")
+    label_engine = tk.Label(tab1, textvariable=var_oil, font=("",80), fg="red")
     label_engine.place(x=230, y=270)
-    label_water = tk.Label(root, textvariable=var_water, font=("",80), fg="blue")
+    label_water = tk.Label(tab1, textvariable=var_water, font=("",80), fg="blue")
     label_water.place(x=520, y=270)
 
 
@@ -179,15 +189,6 @@ def nextpoint(event):
 #    Button1.bind("<Button-1>",nextpoint, command=sys.exit)
 #    Button1.place(x=100, y=300)
 
-root = tk.Tk()
-root.title("V2")
-root.geometry("800x420")
-nb = ttk.Notebook(master = root)
-tab1 = tk.Frame(nb)
-tab2 = tk.Frame(nb)
-nb.add(tab1,text = 'GPS')
-nb.add(tab2,text = "CanView")
-nb.pack()
 
 
 
@@ -461,4 +462,4 @@ root.after(2000,Oil_temp_loop)
 root.after(10,reflesh)
 root.after(1000,datalog)
 
-root.mainloop()
+tab1.mainloop()
