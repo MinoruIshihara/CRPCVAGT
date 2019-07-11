@@ -39,10 +39,20 @@ p = 0
 root = tk.Tk()
 root.title("V2")
 root.geometry("800x420")
-nb = ttk.Notebook(width=800,height=420)
-tab = tk.Frame(root)
-nb.add(tab,text="CanView")
+#nb = ttk.Notebook(width=800,height=420)
+#tab = tk.Frame(root)
+#nb.add(tab,text="CanView")
 
+
+#root = tk.Tk()
+#root.title("V2")
+#root.geometry("800x420")
+nb = ttk.Notebook(master = root)
+tab1 = tk.Frame(nb)
+tab2 = tk.Frame(nb)
+nb.add(tab1,text = 'GPS',padding = 3)
+nb.add(tab2,text = "CanView",padding = 3)
+nb.pack()
 
 var_water = tk.StringVar()
 var_oil = tk.StringVar()
@@ -179,15 +189,6 @@ def nextpoint(event):
 #    Button1.bind("<Button-1>",nextpoint, command=sys.exit)
 #    Button1.place(x=100, y=300)
 
-root = tk.Tk()
-root.title("V2")
-root.geometry("800x420")
-nb = ttk.Notebook(master = root)
-tab1 = tk.Frame(nb)
-tab2 = tk.Frame(nb)
-nb.add(tab1,text = 'GPS')
-nb.add(tab2,text = "CanView")
-nb.pack()
 
 
 
