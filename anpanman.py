@@ -52,7 +52,7 @@ tab1 = tk.Frame(nb)
 tab2 = tk.Frame(nb)
 nb.add(tab1,text = 'GPS',padding = 3)
 nb.add(tab2,text = "CanView",padding = 3)
-nb.pack()
+nb.pack(expand = 1,fill = 'both')
 
 var_water = tk.StringVar()
 var_oil = tk.StringVar()
@@ -76,13 +76,13 @@ def window():
     static8=tk.Label(tab1, textvariable=var_titen, font=("",30))
     static8.place(x=200, y=150)
 
-    Button1=tk.Button(text='スタート',font=("",20))
+    Button1=tk.Button(tab1,text='スタート',font=("",20))
     Button1.bind("<Button-1>",start)
     Button1.place(x=0, y=200)
-    Button2=tk.Button(text='進む',font=("",20))
+    Button2=tk.Button(tab1,text='進む',font=("",20))
     Button2.bind("<Button-1>",next)
     Button2.place(x=0, y=150)
-    Button3=tk.Button(text='戻る',font=("",20))
+    Button3=tk.Button(tab1,text='戻る',font=("",20))
     Button3.bind("<Button-1>",back)
     Button3.place(x=100, y=150)
 
@@ -132,7 +132,7 @@ def datalog():
     file = open('./datalog.txt', 'a')
     file.write(str(gps.latitude[0]) + ' ' + str(gps.longitude[0])+ ' ' + time.strftime("%y/%m/%d %H:%M:%S")+"\n")
     file.close()
-    root.after(1000,datalog)
+    tab1.after(1000,datalog)
 
 def laplog():
     global laptime
@@ -254,13 +254,13 @@ bus_oil.write_i2c_block_data(0x68,0b10001000,[0x00])
 def Oil_temp_loop():
     x = Oil_temp()
     var_oil.set(x)
-    root.after(1000, Oil_temp_loop)
+    tab1.after(1000, Oil_temp_loop)
 
 
 #水温の取得
 def water_temp():
     var_water.set('{:<.1f}'.format(data['ENGTHW']))
-    root.after(500, water_temp)
+    tab1.after(500, water_temp)
 
 
 call_back_function=CallBackFunction()
@@ -318,7 +318,7 @@ def eienloop():
     global lat, lon
     lat = coor[point][0]
     lon = coor[point][1]
-    root.after(100, eienloop)
+    tab1.after(100, eienloop)
 
 
 #ラップ設定
@@ -452,14 +452,15 @@ def reflesh():
         var_laptime.set(z)
     '''
 
-    root.after(10,reflesh)
+    tab1.after(10,reflesh)
 
 
-root.after(10,window)
-root.after(100,eienloop)
-root.after(2000,water_temp)
-root.after(2000,Oil_temp_loop)
-root.after(10,reflesh)
-root.after(1000,datalog)
+tab1.after(10,window)
+tab1.after(100,eienloop)
+tab1.after(2000,water_temp)
+tab1.after(2000,Oil_temp_loop)
+tab1.after(10,reflesh)
+tab1.after(1000,datalog)
 
 tab1.mainloop()
+root.mainloop()
