@@ -202,9 +202,9 @@ class CallBackFunction(can.Listener):
             data['PMTPB'] = (msg.data[3] * 0x100 + msg.data[4]) * 500 / 256 / 256
             data['SGMTAUO'] = (msg.data[5] * 0x100 + msg.data[6]) / 32
             data['XVTHDEF'] = (msg.data[2] & 0x40) / 0x40
-            data['XFATHR'] = (msd.data[2] & 0x20) / 0x20
-            data['XPMDEF'] = (msd.data[2] & 0x10) / 0x10
-            data['XFAPM'] = (msd.data[2] & 0x08) / 0x08
+            data['XFATHR'] = (msg.data[2] & 0x20) / 0x20
+            data['XPMDEF'] = (msg.data[2] & 0x10) / 0x10
+            data['XFAPM'] = (msg.data[2] & 0x08) / 0x08
         if msg.arbitration_id == 0x042:
             data['TA2AT'] = (msg.data[0] * 0x100 + msg.data[1]) * 125 / 64 / 256
             data['ENGTRQ'] = (msg.data[2] * 0x100 + msg.data[3]) / 64
