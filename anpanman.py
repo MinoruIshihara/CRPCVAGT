@@ -72,7 +72,7 @@ def window():
     static2=tk.Label(tab1, textvariable=var_stopwatch, text="{0:.2f}".format(rtime), font=("",100),justify="center")
     static2.place(x=0,y=-10)
     static7=tk.Label(tab1, textvariable=var_laptime, font=("",80))
-    static7.place(x=450, y=100)
+    static7.place(x=450, y=80)
     static8=tk.Label(tab1, textvariable=var_titen, font=("",30))
     static8.place(x=200, y=150)
 
@@ -100,12 +100,12 @@ def window():
 
     TxtEngine = tk.Label(tab1,text='OilTmp', fg="red")
     TxtWater = tk.Label(tab1,text='WaterTmp', fg="blue")
-    TxtEngine.place(x=300,y=240)
-    TxtWater.place(x=570,y=240)
+    TxtEngine.place(x=300,y=220)
+    TxtWater.place(x=570,y=220)
     label_engine = tk.Label(tab1, textvariable=var_oil, font=("",80), fg="red")
-    label_engine.place(x=230, y=270)
+    label_engine.place(x=230, y=235)
     label_water = tk.Label(tab1, textvariable=var_water, font=("",80), fg="blue")
-    label_water.place(x=520, y=270)
+    label_water.place(x=520, y=235)
 
 
 #GPSの取得
