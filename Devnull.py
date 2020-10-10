@@ -60,27 +60,32 @@ def getOilTemp():
     lnRf = Rf / 10000
     Temp = 3380 / (math.log(lnRf) + 3380 / 298.16) - 273.16
     return ('{:<.1f}'.format(Temp))
+    return 'Oil'
 
 def getWaterTemp():
     return ('{:<.1f}'.format(data['ENGTHW']))
+    return 'Water'
 
 def getCurrentTime():
     return time.strftime("%m/%d %H:%M:%S")
 
 def updateWindow():
-	waterTemp=tk.StringVar(getWaterTemp())
-	engineRPM=tk.StringVar()
-	oilTemp = tk.StringVar(getOilTemp())
-	
-    txtOil = tk.Label(tab1,text='OilTmp', fg="red")
-    txtWater = tk.Label(tab1,text='WaterTmp', fg="blue")
-    txtOil.place(x=300,y=220)
-    txtWater.place(x=570,y=220)
-    
-    labelOil = tk.Label(tab1, textvariable = oilTemp, font = ("", 80), fg = "red")
-    labelOil.place(x = 230, y = 235)
-    labelWater = tk.Label(tab1, textvariable = waterTemp, font = ("", 80), fg = "blue")
-    labelWater.place(x = 520, y = 235)
+    waterTemp=tk.StringVar()
+    waterTemp.set(getWaterTemp())
+    engineRPM=tk.StringVar()
+    engineRPM.set('ENGINERPM')
+    oilTemp = tk.StringVar()
+    oilTemp.set(getOilTemp())
+
+    oilTitleLabel = tk.Label(root, text = 'OilTmep', fg = 'red', bg = 'gray12')
+    oilTitleLabel.place(x=300,y=220)
+    waterTitleLabel = tk.Label(root, text='WaterTmep', fg = "blue", bg = 'gray12')
+    waterTitleLabel.place(x=570,y=220)
+        
+    oilTempLabel = tk.Label(root, textvariable = oilTemp, font = ("", 80), fg = "red", bg = 'gray12')
+    oilTempLabel.place(x = 230, y = 235)
+    waterTempLabel = tk.Label(root, textvariable = waterTemp, font = ("", 80), fg = "blue", bg = 'gray12')
+    waterTempLabel.place(x = 520, y = 235)
 
 
 busOil = smbus2.SMBus(1)
@@ -91,10 +96,9 @@ can.Notifier(bus, [call_back_function, ])
 
 root = tk.Tk()
 root.title("Developer's tool")
-root.geometry("800x420")
+root.attributes('-fullscreen', True)
+root.configure(bg = 'gray9')
 
-root.after(10,window)
-root.after(2000,water_temp)
-root.after(2000,Oil_temp_loop)
+root.after(10,updateWindow)
 
 root.mainloop()
