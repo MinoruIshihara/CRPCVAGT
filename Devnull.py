@@ -86,7 +86,7 @@ def updateWindow():
     oilTempLabel.place(x = 230, y = 235)
     waterTempLabel = tk.Label(root, textvariable = waterTemp, font = ("", 80), fg = "blue", bg = 'gray12')
     waterTempLabel.place(x = 520, y = 235)
-
+    root.after(10,updateWindow)
 
 busOil = smbus2.SMBus(1)
 busOil.write_i2c_block_data(0x68, 0b10001000, [0x00])
@@ -98,7 +98,6 @@ root = tk.Tk()
 root.title("Developer's tool")
 root.attributes('-fullscreen', True)
 root.configure(bg = 'gray9')
-
 root.after(10,updateWindow)
 
 root.mainloop()
