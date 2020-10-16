@@ -9,6 +9,8 @@ import math
 import smbus2
 
 data = {"NE":0, "PMTPB":0, "SGMTAUO":0, "TA2AT":0, "ENGTRQ":0, "ENGTHW":0, "VREQTRQ":0, "ATOTMP":0, "ABSSP1":0, "METSP1":0, "AP":0,"OILTEMP":0}
+dataName = {"NE","PMTPB","SGMTAUO","TA2AT","ENGTRQ","ENGTHW","UREQTRQ","ABSSP1","TRQLMTBK","METSP1"}
+dataNameJp = {"NE":"エンジン回転数","PMTPB":"仮想吸気管圧力","SGMATAUO":"燃料噴射量","TA2AT":"スロットル開度","ENGTRQ":"エンジントルク","ENGTHW":"エンジン水温","UREQTRQ":"ユーザー要求トルク","ABSSP1":"ABS(VSC)車速","TRQLMTBK":"VSC要求トルク","METSP1":"メーター車速"}
 canBus = can.interface.Bus('can0', bustype = 'socketcan', bitrate = 500000, canfilters = None)
 
 class CallBackFunction(can.Listener):
@@ -65,28 +67,17 @@ def getOilTemp():
 def getWaterTemp():
     return ('{:<.1f}'.format(data['ENGTHW']))
     return 'Water'
-
+	
 def getCurrentTime():
     return time.strftime("%m/%d %H:%M:%S")
 
 def updateWindow():
-    waterTemp=tk.StringVar()
-    waterTemp.set(getWaterTemp())
-    engineRPM=tk.StringVar()
-    engineRPM.set('ENGINERPM')
-    oilTemp = tk.StringVar()
-    oilTemp.set(getOilTemp())
+    NETitleLabel = tk.Label(root,text = 'エンジン回転数')
+    NETitleLabel.grid(row = 0,column = 0,sticky = Tk.W)
+    NEValueLabel = tk.Label(root,textvariable = data['NE'])
+    NEValueLabel.grid(row = 1,column = 0,sticky = Tk.W)
+	root.after(10,updateWindow)
 
-    oilTitleLabel = tk.Label(root, text = 'OilTmep', fg = 'red', bg = 'gray12')
-    oilTitleLabel.place(x=300,y=220)
-    waterTitleLabel = tk.Label(root, text='WaterTmep', fg = "blue", bg = 'gray12')
-    waterTitleLabel.place(x=570,y=220)
-        
-    oilTempLabel = tk.Label(root, textvariable = oilTemp, font = ("", 80), fg = "red", bg = 'gray12')
-    oilTempLabel.place(x = 230, y = 235)
-    waterTempLabel = tk.Label(root, textvariable = waterTemp, font = ("", 80), fg = "blue", bg = 'gray12')
-    waterTempLabel.place(x = 520, y = 235)
-    root.after(10,updateWindow)
 
 busOil = smbus2.SMBus(1)
 busOil.write_i2c_block_data(0x68, 0b10001000, [0x00])
@@ -98,6 +89,5 @@ root = tk.Tk()
 root.title("Developer's tool")
 root.attributes('-fullscreen', True)
 root.configure(bg = 'gray9')
-root.after(10,updateWindow)
 
 root.mainloop()
