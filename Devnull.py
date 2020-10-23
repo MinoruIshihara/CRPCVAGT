@@ -8,9 +8,10 @@ import can
 import math
 import smbus2
 
-data = {"NE":0, "PMTPB":0, "SGMTAUO":0, "TA2AT":0, "ENGTRQ":0, "ENGTHW":0, "VREQTRQ":0, "ATOTMP":0, "ABSSP1":0, "METSP1":0, "AP":0,"OILTEMP":0}
+data = {"NE":0, "PMTPB":0, "SGMTAUO":0, "TA2AT":0, "ENGTRQ":0, "ENGTHW":0, "UREQTRQ":0, "ATOTMP":0, "ABSSP1":0, "METSP1":0, "AP":0,"OILTEMP":0}
 dataName = {"NE","PMTPB","SGMTAUO","TA2AT","ENGTRQ","ENGTHW","UREQTRQ","ABSSP1","TRQLMTBK","METSP1"}
-dataNameJp = {"NE":"エンジン回転数","PMTPB":"仮想吸気管圧力","SGMATAUO":"燃料噴射量","TA2AT":"スロットル開度","ENGTRQ":"エンジントルク","ENGTHW":"エンジン水温","UREQTRQ":"ユーザー要求トルク","ABSSP1":"ABS(VSC)車速","TRQLMTBK":"VSC要求トルク","METSP1":"メーター車速"}
+flagNameJP = {"XVTHDEF":"スロットルセンサーフェイルセーフ中","XFATHR":"スロットルセンサーフェイル","XPMDEF":"PMセンサーフェイルセーフ中","XFAPM":"PMセンサーフェイル","XTHWHIAT":"高水温","XVTHDEFAT":"スロットルセンサーフェイルセーフ中","XTHWNG":"エンジン水温異常","VSCTRQR":"トルクダウン要求","XEGSTOPFREQ":"エンジン始動中止要求"
+dataNameJP = {"NE":"エンジン回転数","PMTPB":"仮想吸気管圧力","SGMATAUO":"燃料噴射量","TA2AT":"スロットル開度","ENGTRQ":"エンジントルク","ENGTHW":"エンジン水温","UREQTRQ":"ユーザー要求トルク","ABSSP1":"ABS(VSC)車速","TRQLMTBK":"VSC要求トルク","METSP1":"メーター車速"}
 canBus = can.interface.Bus('can0', bustype = 'socketcan', bitrate = 500000, canfilters = None)
 
 class CallBackFunction(can.Listener):
@@ -72,10 +73,26 @@ def getCurrentTime():
     return time.strftime("%m/%d %H:%M:%S")
 
 def updateWindow():
-    NETitleLabel = tk.Label(root,text = 'エンジン回転数')
-    NETitleLabel.grid(row = 0,column = 0,sticky = Tk.W)
-    NEValueLabel = tk.Label(root,textvariable = data['NE'])
-    NEValueLabel.grid(row = 1,column = 0,sticky = Tk.W)
+	variableFrame = tk.Frame(root)
+	variableFrame.grid(row = 0,column = 0)
+	flagFrame = tk.Frame(root)
+	flagFrame.grid(row = 1.column = 0)
+	
+	titleLabel = dict()
+	valueLabel = dict()
+	numofElement = 0
+	for enName in dataName
+		titleLabel[enName] = tk.Label(variableFrame,text = dataNameJP[enName])
+		titleLabel[enName].grid(row = numofElement // 3 * 2,column = numofElement % 3)
+		valueLabel[enName] = tk.Label(variableFrame,textvariable = data[enName])
+		valueLabel[enName].grid(row = numofElement // 3 * 2 + 1,column = numofElement % 3)
+		numofElement += 1
+	
+	flagLabel = dict()
+	for enName in flagName.keys()
+		if data[enName] != 0 :
+			dictLabel[enName] = tk.Label(flagFrame,text = flagName[enName])
+			ditcLabel[enName].pack()
 	root.after(10,updateWindow)
 
 
