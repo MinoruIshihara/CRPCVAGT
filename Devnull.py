@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import tkinter as tk
 import tkinter.ttk as ttk
 import time
@@ -8,10 +9,10 @@ import can
 import math
 import smbus2
 
-data = {"NE":0, "PMTPB":0, "SGMTAUO":0, "TA2AT":0, "ENGTRQ":0, "ENGTHW":0, "UREQTRQ":0, "ATOTMP":0, "ABSSP1":0, "METSP1":0, "AP":0,"OILTEMP":0}
+data={"NE" : 0, "PMTPB" : 0, "SGMTAUO" : 0, "TA2AT" : 0, "ENGTRQ" : 0, "ENGTHW" : 0, "UREQTRQ" : 0, "ATOTMP" : 0, "ABSSP1" : 0, "METSP1" : 0, "AP" : 0, "OILTEMP" : 0, "XPMDEF" : 0, "XTHWHIAT" : 0, "XTHWNG" : 0, "XFAPM" : 0, "XFATHR" : 0, "XVTHDEFAT" : 0, "XVTHDEF" : 0, "TRQLMTBK" : 0,'VSCTRQR' : 0, 'XEGSTOPFREQ' : 0}
 dataName = {"NE","PMTPB","SGMTAUO","TA2AT","ENGTRQ","ENGTHW","UREQTRQ","ABSSP1","TRQLMTBK","METSP1"}
-flagNameJP = {"XVTHDEF":"ƒXƒƒbƒgƒ‹ƒZƒ“ƒT[ƒtƒFƒCƒ‹ƒZ[ƒt’†","XFATHR":"ƒXƒƒbƒgƒ‹ƒZƒ“ƒT[ƒtƒFƒCƒ‹","XPMDEF":"PMƒZƒ“ƒT[ƒtƒFƒCƒ‹ƒZ[ƒt’†","XFAPM":"PMƒZƒ“ƒT[ƒtƒFƒCƒ‹","XTHWHIAT":"‚…‰·","XVTHDEFAT":"ƒXƒƒbƒgƒ‹ƒZƒ“ƒT[ƒtƒFƒCƒ‹ƒZ[ƒt’†","XTHWNG":"ƒGƒ“ƒWƒ“…‰·ˆÙí","VSCTRQR":"ƒgƒ‹ƒNƒ_ƒEƒ“—v‹","XEGSTOPFREQ":"ƒGƒ“ƒWƒ“Žn“®’†Ž~—v‹"
-dataNameJP = {"NE":"ƒGƒ“ƒWƒ“‰ñ“]”","PMTPB":"‰¼‘z‹z‹CŠÇˆ³—Í","SGMATAUO":"”R—¿•¬ŽË—Ê","TA2AT":"ƒXƒƒbƒgƒ‹ŠJ“x","ENGTRQ":"ƒGƒ“ƒWƒ“ƒgƒ‹ƒN","ENGTHW":"ƒGƒ“ƒWƒ“…‰·","UREQTRQ":"ƒ†[ƒU[—v‹ƒgƒ‹ƒN","ABSSP1":"ABS(VSC)ŽÔ‘¬","TRQLMTBK":"VSC—v‹ƒgƒ‹ƒN","METSP1":"ƒ[ƒ^[ŽÔ‘¬"}
+flagName={"XVTHDEF":"ã‚¹ãƒ­ãƒƒãƒˆãƒ«ã‚»ãƒ³ã‚µãƒ¼ãƒ•ã‚§ã‚¤ãƒ«ã‚»ãƒ¼ãƒ•ä¸­","XFATHR":"ã‚¹ãƒ­ãƒƒãƒˆãƒ«ã‚»ãƒ³ã‚µãƒ¼ãƒ•ã‚§ã‚¤ãƒ«","XPMDEF":"PMã‚»ãƒ³ã‚µãƒ¼ãƒ•ã‚§ã‚¤ãƒ«ã‚»ãƒ¼ãƒ•ä¸­","XFAPM":"PMã‚»ãƒ³ã‚µãƒ¼ãƒ•ã‚§ã‚¤ãƒ«","XTHWHIAT":"é«˜æ°´æ¸©","XVTHDEFAT":"ã‚¹ãƒ­ãƒƒãƒˆãƒ«ã‚»ãƒ³ã‚µãƒ¼ãƒ•ã‚§ã‚¤ãƒ«ã‚»ãƒ¼ãƒ•ä¸­","XTHWNG":"ã‚¨ãƒ³ã‚¸ãƒ³æ°´æ¸©ç•°å¸¸","VSCTRQR":"ãƒˆãƒ«ã‚¯ãƒ€ã‚¦ãƒ³è¦æ±‚","XEGSTOPFREQ":"ã‚¨ãƒ³ã‚¸ãƒ³å§‹å‹•ä¸­æ­¢è¦æ±‚"}
+dataNameJP = {"NE":"ã‚¨ãƒ³ã‚¸ãƒ³å›žè»¢æ•°","PMTPB":"ä»®æƒ³å¸æ°—ç®¡åœ§åŠ›","SGMTAUO":"ç‡ƒæ–™å™´å°„é‡","TA2AT":"ã‚¹ãƒ­ãƒƒãƒˆãƒ«é–‹åº¦","ENGTRQ":"ã‚¨ãƒ³ã‚¸ãƒ³ãƒˆãƒ«ã‚¯","ENGTHW":"ã‚¨ãƒ³ã‚¸ãƒ³æ°´æ¸©","UREQTRQ":"ãƒ¦ãƒ¼ã‚¶ãƒ¼è¦æ±‚ãƒˆãƒ«ã‚¯","ABSSP1":"ABS(VSC)è»Šé€Ÿ","TRQLMTBK":"VSCè¦æ±‚ãƒˆãƒ«ã‚¯","METSP1":"ãƒ¡ãƒ¼ã‚¿ãƒ¼è»Šé€Ÿ"}
 canBus = can.interface.Bus('can0', bustype = 'socketcan', bitrate = 500000, canfilters = None)
 
 class CallBackFunction(can.Listener):
@@ -63,12 +64,10 @@ def getOilTemp():
     lnRf = Rf / 10000
     Temp = 3380 / (math.log(lnRf) + 3380 / 298.16) - 273.16
     return ('{:<.1f}'.format(Temp))
-    return 'Oil'
 
 def getWaterTemp():
     return ('{:<.1f}'.format(data['ENGTHW']))
-    return 'Water'
-	
+
 def getCurrentTime():
     return time.strftime("%m/%d %H:%M:%S")
 
@@ -76,35 +75,36 @@ def updateWindow():
 	variableFrame = tk.Frame(root)
 	variableFrame.grid(row = 0,column = 0)
 	flagFrame = tk.Frame(root)
-	flagFrame.grid(row = 1.column = 0)
+	flagFrame.grid(row = 1,column = 0)
 	
 	titleLabel = dict()
 	valueLabel = dict()
 	numofElement = 0
-	for enName in dataName
+	for enName in dataName:
 		titleLabel[enName] = tk.Label(variableFrame,text = dataNameJP[enName])
 		titleLabel[enName].grid(row = numofElement // 3 * 2,column = numofElement % 3)
-		valueLabel[enName] = tk.Label(variableFrame,textvariable = data[enName])
+		valueLabel[enName] = tk.Label(variableFrame,text = data[enName])
 		valueLabel[enName].grid(row = numofElement // 3 * 2 + 1,column = numofElement % 3)
+		print(enName, ':', data[enName])
 		numofElement += 1
 	
 	flagLabel = dict()
-	for enName in flagName.keys()
+	for enName in flagName.keys():
 		if data[enName] != 0 :
-			dictLabel[enName] = tk.Label(flagFrame,text = flagName[enName])
-			ditcLabel[enName].pack()
-	root.after(10,updateWindow)
+			flagLabel[enName] = tk.Label(flagFrame,text = flagName[enName])
+			flagLabel[enName].pack()
+	root.after(100,updateWindow)
 
 
 busOil = smbus2.SMBus(1)
 busOil.write_i2c_block_data(0x68, 0b10001000, [0x00])
 
 call_back_function = CallBackFunction()
-can.Notifier(bus, [call_back_function, ])
+can.Notifier(canBus, [call_back_function, ])
 
 root = tk.Tk()
 root.title("Developer's tool")
-root.attributes('-fullscreen', True)
-root.configure(bg = 'gray9')
-
+#root.attributes('-fullscreen', True)
+root.configure(bg = '#ffffff')
+root.after(100, updateWindow)
 root.mainloop()
