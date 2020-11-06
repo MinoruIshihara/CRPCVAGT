@@ -15,8 +15,37 @@ flagName={"XVTHDEF":"スロットルセンサーフェイルセーフ中","XFATH
 dataNameJP = {"NE":"エンジン回転数","PMTPB":"仮想吸気管圧力","SGMTAUO":"燃料噴射量","TA2AT":"スロットル開度","ENGTRQ":"エンジントルク","ENGTHW":"エンジン水温","UREQTRQ":"ユーザー要求トルク","ABSSP1":"ABS(VSC)車速","TRQLMTBK":"VSC要求トルク","METSP1":"メーター車速"}
 canBus = can.interface.Bus('can0', bustype = 'socketcan', bitrate = 500000, canfilters = None)
 
+root = tk.Tk()
+root.title("Developer's tool")
+#root.attributes('-fullscreen', True)
+root.configure(bg = '#ffffff')
+
+titleLabel = dict()
+valueLabel = dict()
+valueString = dict()
+numofElement = 0
+variableFrame = tk.Frame(root)
+variableFrame.grid(row = 0,column = 0)
+flagFrame = tk.Frame(root)
+flagFrame.grid(row = 1,column = 0)
+for enName in dataName:
+	titleLabel[enName] = tk.Label(variableFrame,text = dataNameJP[enName])
+	titleLabel[enName].grid(row = numofElement // 3 * 2,column = numofElement % 3)
+	valueString[enName] = tk.DoubleVar()
+	valueLabel[enName] = tk.Label(variableFrame,text = valueString[enName].get())
+	valueLabel[enName].grid(row = numofElement // 3 * 2 + 1,column = numofElement % 3)
+	numofElement += 1
+
+
+flagLabel = dict()
+flagString = dict()
+for enName in flagName.keys():
+	flagString[enName] = tk.StringVar()
+	flagLabel[enName] = tk.Label(flagFrame,text = flagString[enName].get())
+	flagLabel[enName].pack()
 class CallBackFunction(can.Listener):
     def on_message_received(self, msg):
+#        print('call_back')
         if msg.arbitration_id == 0x040:
             data['NE'] = (msg.data[0] * 0x100 + msg.data[1]) * 12800 / 64 / 256
             data['PMTPB'] = (msg.data[3] * 0x100 + msg.data[4]) * 500 / 256 / 256
@@ -25,6 +54,7 @@ class CallBackFunction(can.Listener):
             data['XFATHR'] = (msg.data[2] & 0x20) / 0x20
             data['XPMDEF'] = (msg.data[2] & 0x10) / 0x10
             data['XFAPM'] = (msg.data[2] & 0x08) / 0x08
+            print('msg:', data['NE'])
         if msg.arbitration_id == 0x042:
             data['TA2AT'] = (msg.data[0] * 0x100 + msg.data[1]) * 125 / 64 / 256
             data['ENGTRQ'] = (msg.data[2] * 0x100 + msg.data[3]) / 64
@@ -72,29 +102,17 @@ def getCurrentTime():
     return time.strftime("%m/%d %H:%M:%S")
 
 def updateWindow():
-	variableFrame = tk.Frame(root)
-	variableFrame.grid(row = 0,column = 0)
-	flagFrame = tk.Frame(root)
-	flagFrame.grid(row = 1,column = 0)
-	
-	titleLabel = dict()
-	valueLabel = dict()
-	numofElement = 0
+	print(getWaterTemp())
 	for enName in dataName:
-		titleLabel[enName] = tk.Label(variableFrame,text = dataNameJP[enName])
-		titleLabel[enName].grid(row = numofElement // 3 * 2,column = numofElement % 3)
-		valueLabel[enName] = tk.Label(variableFrame,text = data[enName])
-		valueLabel[enName].grid(row = numofElement // 3 * 2 + 1,column = numofElement % 3)
+		valueString[enName].set(data[enName])
 		print(enName, ':', data[enName])
-		numofElement += 1
-	
-	flagLabel = dict()
 	for enName in flagName.keys():
 		if data[enName] != 0 :
-			flagLabel[enName] = tk.Label(flagFrame,text = flagName[enName])
+			flagString[enName].set(flagName[enName])
 			flagLabel[enName].pack()
+		else :
+			flagLabel[enName].pack_forget()
 	root.after(100,updateWindow)
-
 
 busOil = smbus2.SMBus(1)
 busOil.write_i2c_block_data(0x68, 0b10001000, [0x00])
@@ -102,9 +120,5 @@ busOil.write_i2c_block_data(0x68, 0b10001000, [0x00])
 call_back_function = CallBackFunction()
 can.Notifier(canBus, [call_back_function, ])
 
-root = tk.Tk()
-root.title("Developer's tool")
-#root.attributes('-fullscreen', True)
-root.configure(bg = '#ffffff')
 root.after(100, updateWindow)
 root.mainloop()
