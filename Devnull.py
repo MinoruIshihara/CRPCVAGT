@@ -11,7 +11,7 @@ import smbus2
 
 data={"oilTemp" : 0, "NE" : 0, "PMTPB" : 0, "SGMTAUO" : 0, "TA2AT" : 0, "ENGTRQ" : 0, "ENGTHW" : 0, "UREQTRQ" : 0, "ATOTMP" : 0, "ABSSP1" : 0, "METSP1" : 0, "AP" : 0, "OILTEMP" : 0, "XPMDEF" : 0, "XTHWHIAT" : 0, "XTHWNG" : 0, "XFAPM" : 0, "XFATHR" : 0, "XVTHDEFAT" : 0, "XVTHDEF" : 1, "TRQLMTBK" : 0,"VSCTRQR" : 0, "XEGSTOPFREQ" : 0}
 dataName = ["oilTemp", "NE", "PMTPB", "SGMTAUO", "TA2AT","ENGTRQ", "ENGTHW", "UREQTRQ", "ABSSP1", "TRQLMTBK", "METSP1"]
-flagName={"XVTHDEF":"スロットルセンサーフェイルセーフ中","XFATHR":"スロットルセンサーフェイル","XPMDEF":"PMセンサーフェイルセーフ中","XFAPM":"PMセンサーフェイル","XTHWHIAT":"高水温","XVTHDEFAT":"スロットルセンサーフェイルセーフ中","XTHWNG":"エンジン水温異常","VSCTRQR":"トルクダウン要求","XEGSTOPFREQ":"エンジン始動中止要求"}
+flagName={"XVTHDEF":"スロットルセンサーフェイルセーフ中","XFATHR":"スロットルセンサーフェイル","XPMDEF":"PMセンサーフェイルセーフ中","XFAPM":"PMセンサーフェイル","XTHWHIAT":"高水温","XVTHDEFAT":"スロットルセンサーフェイルセーフ中 AT","XTHWNG":"エンジン水温異常","VSCTRQR":"トルクダウン要求","XEGSTOPFREQ":"エンジン始動中止要求"}
 dataNameJP = {"oilTemp" : "油温", "NE":"エンジン回転数","PMTPB":"仮想吸気管圧力","SGMTAUO":"燃料噴射量","TA2AT":"スロットル開度","ENGTRQ":"エンジントルク","ENGTHW":"エンジン水温","UREQTRQ":"ユーザー要求トルク","ABSSP1":"ABS(VSC)車速","TRQLMTBK":"VSC要求トルク","METSP1":"メーター車速"}
 canBus = can.interface.Bus('can0', bustype = 'socketcan', bitrate = 500000, canfilters = None)
 
@@ -122,11 +122,11 @@ def updateWindow():
 		flagString[enName[0]].set(enName[1])
 		if data[enName[0]] != 0 :
 			flagLabel[enName[0]] = tk.Label(flagFrame,textvariable = flagString[enName[0]], font = ('', 12), bg = "#080805", fg = "orange")
-			flagLabel[enName[0]].grid(row = n % 3, column = int(n / 3))
+			flagLabel[enName[0]].grid(row = n % 3, column = int(n / 3), padx = 12)
 		#flagLabel[enName].pack()
 		else :
 			flagLabel[enName[0]] = tk.Label(flagFrame,textvariable = flagString[enName[0]], font = ('', 12), bg = "#080805", fg = "blue2")
-			flagLabel[enName[0]].grid(row = n % 3, column = int(n / 3))
+			flagLabel[enName[0]].grid(row = n % 3, column = int(n / 3), padx = 12)
 	root.after(1000,updateWindow)
 
 busOil = smbus2.SMBus(1)
